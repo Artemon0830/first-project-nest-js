@@ -5,9 +5,12 @@ import { UserBaseReqDto } from './user.base.req.dto';
 export class CreateUserReqDto extends PickType(UserBaseReqDto, [
   'name',
   'email',
+  'phone',
   'password',
   'age',
-  'role',
+  'gender',
+  'isStudent',
+  'cars',
 ]) {}
 
 // @ApiProperty({ example: 'Artem Maksymuk', description: 'Name of the user' })
