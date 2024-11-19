@@ -15,9 +15,8 @@ import { CreateUserReqDto } from './dto/req/create-user.req.dto';
 import { UpdateUserReqDto } from './dto/req/update-user.req.dto';
 import { UserListReqDto } from './dto/req/user-list.req.dto';
 import { UserBaseResDto } from './dto/res/user.base.res.dto';
-import { UsersService } from './users.service';
+import { UsersService } from './modules/users.service';
 
-@ApiBearerAuth()
 @ApiConflictResponse({ description: 'Conflict' })
 @Controller('users')
 export class UsersController {
