@@ -9,39 +9,35 @@ import {
 } from '@nestjs/common';
 
 import { BaseListsReqDto } from './dto/req/base-lists.req.dto';
-import { UpdateAnnouncementDto } from './dto/res/update-announcement.dto';
 import { ListsService } from './modules/lists.service';
 
-@Controller('announcement')
+@Controller('lists')
 export class ListsController {
-  constructor(private readonly announcementService: ListsService) {}
+  constructor(private readonly listsService: ListsService) {}
   @Post()
   async create(
-    @Body() createAnnouncementDto: BaseListsReqDto,
+    @Body() createListDto: BaseListsReqDto,
   ): Promise<BaseListsReqDto> {
-    return await this.announcementService.create(createAnnouncementDto);
+    return await this.listsService.create(createListDto);
   }
 
   @Get()
   findAll() {
-    return this.announcementService.findAll();
+    return this.listsService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.announcementService.findOne(+id);
+    return this.listsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateArticleDto: UpdateAnnouncementDto,
-  ) {
-    return this.announcementService.update(+id, updateArticleDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateArticleDto:) {
+  //   return this.listsService.update(+id, updateArticleDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.announcementService.remove(+id);
+    return this.listsService.remove(+id);
   }
 }

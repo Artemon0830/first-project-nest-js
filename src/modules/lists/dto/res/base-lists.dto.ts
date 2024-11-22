@@ -4,6 +4,6 @@ export class BaseListsDto {
   year: number;
   price: number;
   mileage: number;
-  photo: string;
+  image: string;
   description: string;
 }

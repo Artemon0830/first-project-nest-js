@@ -18,25 +18,10 @@ import {
 } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
-import { GenderEnum } from '../enums/gender.enum';
+import { RoleEnum } from '../enums/role.enum';
+import { StatusEnum } from '../enums/status.enum';
+import { AddressBaseReqDto } from './address.base.req.dto';
 
-export class CarBaseReqDto {
-  @Transform(TransformHelper.trim)
-  @Transform(TransformHelper.toLowerCase)
-  @IsString()
-  @Length(1, 50)
-  producer: string;
-  @Transform(TransformHelper.trim)
-  @Transform(TransformHelper.toLowerCase)
-  @IsString()
-  @Length(1, 50)
-  model: string;
-  @ApiProperty({ example: 2021 })
-  @Type(() => Number)
-  @IsInt()
-  @Min(1900)
-  year: number;
-}
 export class UserBaseReqDto {
   @IsString()
   @Length(3, 50)
@@ -60,8 +45,8 @@ export class UserBaseReqDto {
   age?: number;
 
   @IsOptional()
-  @IsEnum(GenderEnum)
-  gender: GenderEnum;
+  @IsEnum(RoleEnum)
+  role: RoleEnum;
   @Transform(TransformHelper.trim)
   @IsNotIn(['password', '12345678', 'admin', 'qwerty', 'password123'])
   @ApiProperty({ example: '123qweWE' })
@@ -72,11 +57,20 @@ export class UserBaseReqDto {
   })
   password: string;
 
-  @IsBoolean()
-  @IsOptional()
-  isStudent: boolean = false;
-  @ValidateNested({ each: true })
+  @IsString()
+  @ApiProperty({
+    example: [
+      'region: Kyiv',
+      'city: Kyiv',
+      'street:Vyshwanogo',
+      'house_number: 1-A',
+    ],
+  })
   @IsArray()
-  @Type(() => CarBaseReqDto)
-  cars: CarBaseReqDto[];
+  @Type(() => AddressBaseReqDto)
+  address: AddressBaseReqDto[];
+
+  @IsOptional()
+  @IsEnum(StatusEnum)
+  status: StatusEnum;
 }

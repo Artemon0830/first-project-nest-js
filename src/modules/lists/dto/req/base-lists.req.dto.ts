@@ -33,7 +33,7 @@ export class BaseListsReqDto {
   @IsString()
   @Length(3, 100)
   @IsOptional()
-  photo?: string;
+  image?: string;
 
   @IsString()
   @Length(3, 100)

@@ -7,7 +7,7 @@ export class CreateListsDto extends PickType(BaseListsDto, [
   'model',
   'year',
   'mileage',
-  'photo',
+  'image',
   'price',
   'description',
 ]) {}
