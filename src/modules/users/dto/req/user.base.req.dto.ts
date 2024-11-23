@@ -57,7 +57,6 @@ export class UserBaseReqDto {
   })
   password: string;
 
-  @IsString()
   @ApiProperty({
     example: [
       'region: Kyiv',
