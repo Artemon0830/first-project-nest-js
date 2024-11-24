@@ -8,9 +8,13 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
 
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAccessGuard } from '../auth/guard/jwt-access.guard';
+import { IUserData } from '../auth/interface/user-data.interface';
 import { CreateUserReqDto } from './dto/req/create-user.req.dto';
 import { UpdateUserReqDto } from './dto/req/update-user.req.dto';
 import { UserListReqDto } from './dto/req/user-list.req.dto';
@@ -29,15 +33,16 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll(@Query() query: UserListReqDto) {
-    return this.usersService.findAll();
+  @ApiBearerAuth()
+  @Get('me')
+  findMe(@CurrentUser() userData: IUserData) {
+    return this.usersService.findMe(userData);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id', ParseUUIDPipe) id: string) {
+  //   return this.usersService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserReqDto) {

@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { JwtService } from '@nestjs/jwt';
 
 import { ConfigType, JwtConfig } from '../../../configs/config.type';
+import { TokenType } from '../enum/token-type.enum';
 import { IJwtPayload } from '../interface/jwt-payload.interface';
 import { ITokenPair } from '../interface/token-pair.interface';
 
@@ -17,7 +18,7 @@ export class TokenService {
     this.jwtConfig = configService.get<JwtConfig>('jwt');
   }
 
-  public async generateToken(payload: IJwtPayload): Promise<ITokenPair> {
+  public async generateTokens(payload: IJwtPayload): Promise<ITokenPair> {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.jwtConfig.accessSecret,
       expiresIn: this.jwtConfig.accessExpiresIn,
@@ -29,7 +30,31 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
-  public async verifyToken(token: string): Promise<any> {
-    return await this.jwtService.verifyAsync(token);
+  public async verifyToken(
+    token: string,
+    type: TokenType,
+  ): Promise<IJwtPayload> {
+    try {
+      return await this.jwtService.verifyAsync(token, {
+        secret: this.getSecret(type),
+      });
+    } catch (e) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  private getSecret(type: TokenType): string {
+    let secret: string;
+    switch (type) {
+      case TokenType.ACCESS:
+        secret = this.jwtConfig.accessSecret;
+        break;
+      case TokenType.REFRESH:
+        secret = this.jwtConfig.refreshSecret;
+        break;
+      default:
+        throw new Error('Unknown token type');
+    }
+    return secret;
   }
 }

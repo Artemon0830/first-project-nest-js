@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AppConfig, ConfigType } from '../../../configs/config.type';
+import { IUserData } from '../../auth/interface/user-data.interface';
 import { CreateUserReqDto } from '../dto/req/create-user.req.dto';
 import { UpdateUserReqDto } from '../dto/req/update-user.req.dto';
 import { UserBaseResDto } from '../dto/res/user.base.res.dto';
@@ -21,8 +22,8 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findMe(userData: IUserData) {
+    return `This action returns a #${userData.userId} user`;
   }
 
   update(id: number, updateUserDto: UpdateUserReqDto) {
