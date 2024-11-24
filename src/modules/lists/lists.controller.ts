@@ -7,10 +7,12 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { BaseListsReqDto } from './dto/req/base-lists.req.dto';
 import { ListsService } from './modules/lists.service';
 
+@ApiTags('Lists')
 @Controller('lists')
 export class ListsController {
   constructor(private readonly listsService: ListsService) {}

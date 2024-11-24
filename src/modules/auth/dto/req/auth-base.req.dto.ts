@@ -12,8 +12,5 @@ export class AuthBaseReqDto extends PickType(UserBaseReqDto, [
   'status',
   'address',
   'password',
-]) {
-  @IsNotEmpty()
-  @IsString()
-  readonly deviceId: string;
-}
+  'deviceId',
+]) {}

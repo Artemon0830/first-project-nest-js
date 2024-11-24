@@ -16,6 +16,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { ListID, UserID } from '../../common/types/entity-ids.type';
 import { TableNameEnum } from './enums/table-name-enum';
 import { LikeEntity } from './like.entity';
 import { CreateUpdateModel } from './models/create-update.model';
@@ -24,7 +25,7 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.LISTS)
 export class ListEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: ListID;
   @Column('text')
   model: string;
 
@@ -49,7 +50,7 @@ export class ListEntity extends CreateUpdateModel {
   likes?: LikeEntity[];
 
   @Column()
-  user_id: string;
+  user_id: UserID;
   @ManyToOne(() => UserEntity, (entity) => entity.lists)
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;

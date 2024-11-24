@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsString, Length, Min } from 'class-validator';
+import { IsInt, IsNumber, IsString, Length, Min } from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { IAddress } from '../../interface/IAddress';
 
 export class AddressBaseReqDto {
   @Transform(TransformHelper.trim)
@@ -20,8 +21,6 @@ export class AddressBaseReqDto {
   @IsString()
   @Length(1, 50)
   street: string;
-  @ApiProperty({ example: 2021 })
-  @Type(() => Number)
-  @IsInt()
-  house_number: number;
+  @IsString()
+  house_number: string;
 }

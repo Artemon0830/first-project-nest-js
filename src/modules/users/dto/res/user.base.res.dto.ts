@@ -1,4 +1,5 @@
 import { IAddress } from '../../interface/IAddress';
+import { AddressBaseReqDto } from '../req/address.base.req.dto';
 
 export class UserBaseResDto {
   id: string;
@@ -6,7 +7,7 @@ export class UserBaseResDto {
   email: string;
   address: IAddress[];
   age: number;
+  phone: string;
   role: string;
   status: string;
-  created_at: Date;
 }

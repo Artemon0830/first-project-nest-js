@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiConflictResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserReqDto } from './dto/req/create-user.req.dto';
 import { UpdateUserReqDto } from './dto/req/update-user.req.dto';
@@ -17,6 +17,7 @@ import { UserListReqDto } from './dto/req/user-list.req.dto';
 import { UserBaseResDto } from './dto/res/user.base.res.dto';
 import { UsersService } from './modules/users.service';
 
+@ApiTags('Users')
 @ApiConflictResponse({ description: 'Conflict' })
 @Controller('users')
 export class UsersController {
