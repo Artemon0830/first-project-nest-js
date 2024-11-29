@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsInt,
@@ -18,8 +19,8 @@ import {
 import { Index } from 'typeorm';
 
 import { TransformHelper } from '../../../../common/helpers/transform.helper';
+import { BaseCarsReqDto } from '../../../cars/dto/req/base-cars.req.dto';
 import { RoleEnum } from '../enums/role.enum';
-import { StatusEnum } from '../enums/status.enum';
 import { AddressBaseReqDto } from './address.base.req.dto';
 
 @Index(['email'], { unique: true })
@@ -86,8 +87,6 @@ export class UserBaseReqDto {
   @Type(() => AddressBaseReqDto)
   address: AddressBaseReqDto[];
 
-  @ApiProperty({ enum: StatusEnum, example: StatusEnum.BASE })
-  @IsOptional({ message: 'Status premium is paid only ' })
-  @IsEnum(StatusEnum)
-  status: StatusEnum;
+  @IsBoolean()
+  isPremium: boolean;
 }

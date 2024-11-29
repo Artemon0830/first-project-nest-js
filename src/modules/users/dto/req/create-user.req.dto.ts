@@ -10,7 +10,6 @@ export class CreateUserReqDto extends PickType(UserBaseReqDto, [
   'phone',
   'age',
   'role',
-  'status',
 ]) {}
 
 // @ApiProperty({ example: 'Artem Maksymuk', description: 'Name of the user' })

@@ -17,11 +17,11 @@ export class FollowPremiumEntity {
   id: Follow_premiumID;
 
   @CreateDateColumn()
-  created: Date;
+  createdPremiumAt: Date;
 
   @Column()
-  user_id: UserID;
+  following_id: UserID;
   @ManyToOne(() => UserEntity, (entity) => entity.premium)
-  @JoinColumn({ name: 'user_id' })
-  user_premium?: UserEntity;
+  @JoinColumn({ name: 'following_id' })
+  user?: UserEntity;
 }

@@ -1,5 +1,6 @@
+import { CarEntity } from '../../../../database/entities/car.entity';
+import { CarResDto } from '../../../cars/dto/res/car.res.dto';
 import { IAddress } from '../../interface/IAddress';
-import { AddressBaseReqDto } from '../req/address.base.req.dto';
 
 export class UserBaseResDto {
   id: string;
@@ -9,5 +10,5 @@ export class UserBaseResDto {
   age: number;
   phone: string;
   role: string;
-  status: string;
+  isPremium: boolean;
 }

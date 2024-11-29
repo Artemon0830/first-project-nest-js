@@ -1,12 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { IsNull } from 'typeorm';
 
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UsersMapper } from '../../users/modules/users.mapper';
-import { SignInReqDto } from '../dto/req/sign-in.req.dto';
-import { SignUpReqDto } from '../dto/req/sign-up.req.dto';
-import { AuthResDto } from '../dto/res/auth.res.dto';
+import { SignInReqDto } from '../models/dto/req/sign-in.req.dto';
+import { SignUpReqDto } from '../models/dto/req/sign-up.req.dto';
+import { AuthResDto } from '../models/dto/res/auth.res.dto';
+import { TokenPairResDto } from '../models/dto/res/token-pair.res.dto';
+import { IUserData } from '../models/interfaces/user-data.interface';
 import { AuthCacheService } from './auth-cache-service';
 import { TokenService } from './token.service';
 
@@ -20,15 +23,12 @@ export class AuthService {
   ) {}
 
   public async signUp(dto: SignUpReqDto): Promise<AuthResDto> {
+    await this.isEmailNotExistOrThrow(dto.email);
     const password = await bcrypt.hash(dto.password, 10);
     const user = await this.userRepository.save(
       this.userRepository.create({ ...dto, password }),
     );
-    const deleteOldTokens = await this.refreshTokenRepository.delete({
-      user_id: user.id,
-      deviceId: dto.deviceId,
-    });
-    const tokens = await this.tokenService.generateTokens({
+    const tokens = await this.tokenService.generateAuthTokens({
       userId: user.id,
       deviceId: dto.deviceId,
     });
@@ -50,19 +50,20 @@ export class AuthService {
     return { user: UsersMapper.toUserResDto(user), tokens };
   }
 
-  public async signIn(dto: SignInReqDto): Promise<any> {
+  public async signIn(dto: SignInReqDto): Promise<AuthResDto> {
     const user = await this.userRepository.findOne({
-      where: { email: dto.email },
+      where: { email: dto.email, deleted: IsNull() },
       select: ['id', 'password'],
     });
     if (!user) {
       throw new UnauthorizedException();
     }
-    const isPassword = await bcrypt.compare(dto.password, user.password);
-    if (!isPassword) {
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    if (!isPasswordValid) {
       throw new UnauthorizedException();
     }
-    const tokens = await this.tokenService.generateTokens({
+
+    const tokens = await this.tokenService.generateAuthTokens({
       userId: user.id,
       deviceId: dto.deviceId,
     });
@@ -83,5 +84,53 @@ export class AuthService {
     const userEntity = await this.userRepository.findOneBy({ id: user.id });
 
     return { user: UsersMapper.toUserResDto(userEntity), tokens };
+  }
+
+  public async signOut(userData: IUserData): Promise<void> {
+    await Promise.all([
+      this.authCacheService.deleteToken(userData.userId, userData.deviceId),
+      this.refreshTokenRepository.delete({
+        user_id: userData.userId,
+        deviceId: userData.deviceId,
+      }),
+    ]);
+  }
+
+  public async refresh(userData: IUserData): Promise<TokenPairResDto> {
+    await Promise.all([
+      this.authCacheService.deleteToken(userData.userId, userData.deviceId),
+      this.refreshTokenRepository.delete({
+        user_id: userData.userId,
+        deviceId: userData.deviceId,
+      }),
+    ]);
+
+    const tokens = await this.tokenService.generateAuthTokens({
+      userId: userData.userId,
+      deviceId: userData.deviceId,
+    });
+    await Promise.all([
+      this.authCacheService.saveToken(
+        tokens.accessToken,
+        userData.userId,
+        userData.deviceId,
+      ),
+      this.refreshTokenRepository.save(
+        this.refreshTokenRepository.create({
+          user_id: userData.userId,
+          deviceId: userData.deviceId,
+          refreshToken: tokens.refreshToken,
+        }),
+      ),
+    ]);
+
+    return tokens;
+  }
+
+  private async isEmailNotExistOrThrow(email: string) {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      throw new Error('Email already exists');
+    }
   }
 }

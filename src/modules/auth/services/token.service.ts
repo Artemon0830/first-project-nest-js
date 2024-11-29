@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 import { JwtService } from '@nestjs/jwt';
 
 import { ConfigType, JwtConfig } from '../../../configs/config.type';
-import { TokenType } from '../enum/token-type.enum';
-import { IJwtPayload } from '../interface/jwt-payload.interface';
-import { ITokenPair } from '../interface/token-pair.interface';
+import { TokenType } from '../models/enums/token-type.enum';
+import { IJwtPayload } from '../models/interfaces/jwt-payload.interface';
+import { ITokenPair } from '../models/interfaces/token-pair.interface';
 
 @Injectable()
 export class TokenService {
@@ -18,7 +18,7 @@ export class TokenService {
     this.jwtConfig = configService.get<JwtConfig>('jwt');
   }
 
-  public async generateTokens(payload: IJwtPayload): Promise<ITokenPair> {
+  public async generateAuthTokens(payload: IJwtPayload): Promise<ITokenPair> {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.jwtConfig.accessSecret,
       expiresIn: this.jwtConfig.accessExpiresIn,

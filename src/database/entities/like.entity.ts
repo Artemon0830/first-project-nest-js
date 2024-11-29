@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 
 import { LikeID, ListID } from '../../common/types/entity-ids.type';
+import { CarEntity } from './car.entity';
 import { TableNameEnum } from './enums/table-name-enum';
-import { ListEntity } from './list.entity';
 import { UserEntity } from './user.entity';
 
 @Entity(TableNameEnum.LIKES)
@@ -22,7 +22,7 @@ export class LikeEntity {
 
   @Column()
   list_id: ListID;
-  @ManyToOne(() => ListEntity, (entity) => entity.likes)
+  @ManyToOne(() => CarEntity, (entity) => entity.likes)
   @JoinColumn({ name: 'list_id' })
-  list?: ListEntity;
+  list?: CarEntity;
 }
