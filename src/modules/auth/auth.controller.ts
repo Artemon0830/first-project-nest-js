@@ -1,6 +1,7 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 
+import { RoleEnum } from '../users/dto/enums/role.enum';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { SkipAuth } from './decorators/skip-auth.decorator';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
@@ -18,7 +19,9 @@ export class AuthController {
 
   @SkipAuth()
   @Post('sign-up')
-  public async signUp(@Body() dto: SignUpReqDto): Promise<AuthResDto> {
+  public async signUp(
+    @Body() dto: SignUpReqDto,
+  ): Promise<AuthResDto> {
     return await this.authService.signUp(dto);
   }
 

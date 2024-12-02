@@ -1,33 +1,19 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  Length,
-  Max,
-  Min,
-} from 'class-validator';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { ListID, UserID } from '../../common/types/entity-ids.type';
+import { CarID, UserID } from '../../common/types/entity-ids.type';
 import { TableNameEnum } from './enums/table-name-enum';
 import { LikeEntity } from './like.entity';
-import { CreateUpdateModel } from './models/create-update.model';
 import { UserEntity } from './user.entity';
+import { CarModels } from '../../modules/cars/interface/CarModels';
 
 @Entity(TableNameEnum.CARS)
-export class CarEntity extends CreateUpdateModel {
+export class CarEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: ListID;
+  id: CarID;
+
   @Column('text')
   producer: string;
+
   @Column('text')
   model: string;
 
@@ -40,14 +26,17 @@ export class CarEntity extends CreateUpdateModel {
   @Column('int')
   price: number;
 
+  @Column('enum', { enum: ['USD', 'EUR', 'UAH'], default: 'USD' })
+  currency: string;
+
   @Column('int')
   mileage: number;
 
-  @Column('text')
-  image?: string;
-  @Column('text')
-  description: string;
+  @Column('text', { nullable: true })
+  photoCar: string;
 
+  @Column('text', { nullable: true })
+  description: string;
   @OneToMany(() => LikeEntity, (entity) => entity.list)
   likes?: LikeEntity[];
 

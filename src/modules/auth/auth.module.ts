@@ -23,6 +23,9 @@ import { TokenService } from './services/token.service';
     AuthCacheService,
     TokenService,
   ],
-  exports: [],
+  exports: [JwtRefreshGuard,
+    AuthService,
+    AuthCacheService,
+    TokenService,],
 })
 export class AuthModule {}

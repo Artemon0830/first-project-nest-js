@@ -9,6 +9,7 @@ import { PostgresModule } from './modules/postgres/postgres.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { RepositoryModule } from './modules/repository/repository.module';
 import { UsersModule } from './modules/users/users.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsersModule } from './modules/users/users.module';
     PostgresModule,
     RedisModule,
     RepositoryModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

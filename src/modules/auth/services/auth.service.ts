@@ -1,9 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IsNull } from 'typeorm';
 
 import { RefreshTokenRepository } from '../../repository/services/refresh-token.repository';
 import { UserRepository } from '../../repository/services/user.repository';
+import { RoleEnum } from '../../users/dto/enums/role.enum';
 import { UsersMapper } from '../../users/modules/users.mapper';
 import { SignInReqDto } from '../models/dto/req/sign-in.req.dto';
 import { SignUpReqDto } from '../models/dto/req/sign-up.req.dto';
@@ -53,26 +58,49 @@ export class AuthService {
   public async signIn(dto: SignInReqDto): Promise<AuthResDto> {
     const user = await this.userRepository.findOne({
       where: { email: dto.email, deleted: IsNull() },
-      select: ['id', 'password'],
+      select: ['id', 'password', 'failedLogin', 'isBanned', 'role'], // Додано необхідні поля
     });
+
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid email or password');
     }
+
+    if (user.isBanned) {
+      throw new ForbiddenException('User is banned. Please contact support.');
+    }
+
+
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException();
+      user.failedLogin = (user.failedLogin || 0) + 1;
+
+
+      if (user.failedLogin >= 3) {
+        user.isBanned = true;
+        await this.userRepository.save(user);
+        throw new ForbiddenException(
+          'User has been banned due to too many failed login',
+        );
+      }
+
+      await this.userRepository.save(user);
+      throw new UnauthorizedException('Invalid email or password');
     }
+
+
+    user.failedLogin = 0;
+    await this.userRepository.save(user);
+
+
+
 
     const tokens = await this.tokenService.generateAuthTokens({
       userId: user.id,
       deviceId: dto.deviceId,
     });
+
     await Promise.all([
-      this.authCacheService.saveToken(
-        tokens.accessToken,
-        user.id,
-        dto.deviceId,
-      ),
+      this.authCacheService.saveToken(tokens.accessToken, user.id, dto.deviceId),
       this.refreshTokenRepository.save(
         this.refreshTokenRepository.create({
           user_id: user.id,
@@ -81,10 +109,11 @@ export class AuthService {
         }),
       ),
     ]);
-    const userEntity = await this.userRepository.findOneBy({ id: user.id });
 
+    const userEntity = await this.userRepository.findOneBy({ id: user.id });
     return { user: UsersMapper.toUserResDto(userEntity), tokens };
   }
+
 
   public async signOut(userData: IUserData): Promise<void> {
     await Promise.all([

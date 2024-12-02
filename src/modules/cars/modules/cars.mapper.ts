@@ -13,8 +13,9 @@ export class CarsMapper {
       brand: data.brand,
       year: data.year,
       price: data.price,
+      currency: data.currency,
       mileage: data.mileage,
-      image: data.image,
+      photoCar: data.photoCar,
       description: data.description,
     };
   }

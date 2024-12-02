@@ -1,5 +1,3 @@
-import { CarBrand } from '../../brand/car.brand';
-
 export class CarResDto {
   id: string;
   producer: string;
@@ -7,7 +5,8 @@ export class CarResDto {
   model: string;
   year: number;
   price: number;
+  currency: string;
   mileage: number;
-  image: string;
+  photoCar: string;
   description: string;
 }

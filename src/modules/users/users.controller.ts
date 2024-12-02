@@ -8,10 +8,20 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConflictResponse,
+  ApiConsumes,
+  ApiTags,
+} from '@nestjs/swagger';
 
+import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { UserID } from '../../common/types/entity-ids.type';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SkipAuth } from '../auth/decorators/skip-auth.decorator';
@@ -20,6 +30,7 @@ import { CarsMapper } from '../cars/modules/cars.mapper';
 import { FollowPremiumRepository } from '../repository/services/follow-premium.repository';
 import { FollowPremiumReq } from './dto/req/follow-premium.req';
 import { UpdateUserReqDto } from './dto/req/update-user.req.dto';
+import { UploadAvatarReqDto } from './dto/req/upload-avatar.req.dto';
 import { UserBaseResDto } from './dto/res/user.base.res.dto';
 import { UsersMapper } from './modules/users.mapper';
 import { UsersService } from './modules/users.service';
@@ -28,10 +39,7 @@ import { UsersService } from './modules/users.service';
 @ApiConflictResponse({ description: 'Conflict' })
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    followPremiumRepository: FollowPremiumRepository,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiBearerAuth()
   @Get('me')
@@ -53,6 +61,23 @@ export class UsersController {
   @Delete('delete-me')
   public async removeMe(@CurrentUser() userData: IUserData): Promise<void> {
     await this.usersService.removeMe(userData);
+  }
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiFile('avatar', false, true)
+  @UseInterceptors(FileInterceptor('avatar'))
+  @Post('me/avatar')
+  public async updateAvatar(
+    @CurrentUser() userData: IUserData,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+    await this.usersService.updateAvatar(userData, file);
+  }
+
+  @ApiBearerAuth()
+  @Delete('me/avatar')
+  public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
+    await this.usersService.deleteAvatar(userData);
   }
 
   @SkipAuth()

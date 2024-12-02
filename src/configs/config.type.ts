@@ -3,6 +3,7 @@ export type ConfigType = {
   database: DatabaseConfig;
   redis: RedisConfig;
   jwt: JwtConfig;
+  aws: AwsConfig;
 };
 export type AppConfig = {
   port: number;
@@ -25,4 +26,12 @@ export type JwtConfig = {
   accessExpiresIn: number;
   refreshSecret: string;
   refreshExpiresIn: number;
+};
+export type AwsConfig = {
+  bucketName: string;
+  accessKey: string;
+  secretKey: string;
+  region: string;
+  ACL: string;
+  endpoint: string;
 };

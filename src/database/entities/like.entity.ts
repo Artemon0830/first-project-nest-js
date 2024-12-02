@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { LikeID, ListID } from '../../common/types/entity-ids.type';
+import { LikeID, CarID } from '../../common/types/entity-ids.type';
 import { CarEntity } from './car.entity';
 import { TableNameEnum } from './enums/table-name-enum';
 import { UserEntity } from './user.entity';
@@ -21,7 +21,7 @@ export class LikeEntity {
   created: Date;
 
   @Column()
-  list_id: ListID;
+  list_id: CarID;
   @ManyToOne(() => CarEntity, (entity) => entity.likes)
   @JoinColumn({ name: 'list_id' })
   list?: CarEntity;

@@ -1,5 +1,3 @@
-import { CarEntity } from '../../../../database/entities/car.entity';
-import { CarResDto } from '../../../cars/dto/res/car.res.dto';
 import { IAddress } from '../../interface/IAddress';
 
 export class UserBaseResDto {
@@ -11,4 +9,5 @@ export class UserBaseResDto {
   phone: string;
   role: string;
   isPremium: boolean;
+  image: string;
 }

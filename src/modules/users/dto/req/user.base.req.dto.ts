@@ -51,10 +51,15 @@ export class UserBaseReqDto {
   @IsOptional()
   age?: number;
 
-  @ApiProperty({ default: RoleEnum.USER, enum: RoleEnum })
+  @IsString()
+  image?: string;
+
+  @ApiProperty({ default: RoleEnum.ADMIN, enum: RoleEnum })
   @IsOptional({ message: 'Role admin is not allowed' })
   @IsEnum(RoleEnum)
   role: RoleEnum;
+
+
 
   @ApiProperty({ description: 'User password', example: '123qweWE' })
   @Transform(TransformHelper.trim)
