@@ -12,7 +12,7 @@ RUN npm install
 RUN npm install -g @nestjs/cli
 
 COPY ./backend /app
+COPY ./src /app/src
 
-EXPOSE 3000
 
-CMD ["npm", "run", "start:docker:local"]
+
